@@ -40,8 +40,8 @@ namespace EECS_645_Project
                 {
                     for (int k = 0; k < processors[i].cache.cacheLines[j].ways.Length; k++)
                     {
-                            if ((processors[i].cache.cacheLines[j].ways[k].tag != null) || (processors[i].cache.cacheLines[j].ways[k].tag == "1"))
-                            {
+                            //if ((processors[i].cache.cacheLines[j].ways[k].tag != null) || (processors[i].cache.cacheLines[j].ways[k].tag == "1"))
+                            //{
                             switch (processors[i].cache.cacheLines[j].ways[k].processorState)
                             {
                                 case ProcessorStates.Invalid:
@@ -62,7 +62,7 @@ namespace EECS_645_Project
                                 default:
                                     break;
 
-                            }
+                            //}
                         }
                     }
                 }
