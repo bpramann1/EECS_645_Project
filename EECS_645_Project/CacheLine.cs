@@ -23,7 +23,7 @@ namespace EECS_645_Project
             bool hasTag = false;
             foreach (CacheWay way in ways)
             {
-                hasTag = hasTag || (way.GetTag(offset) == tag) ;
+                hasTag = hasTag || (way.GetTag() == tag) ;
             }
             return hasTag;
         }
@@ -33,7 +33,7 @@ namespace EECS_645_Project
             bool sharedData = false;
             foreach (CacheWay way in ways)
             {
-                sharedData = sharedData || (way.GetTag(offset) == tag) && (way.GetState(offset) == ProcessorStates.Shared) || (way.GetTag(offset) == tag) && (way.GetState(offset) == ProcessorStates.Exclusive);
+                sharedData = sharedData || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Shared) || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Exclusive);
             }
             return sharedData;
         }
@@ -42,7 +42,7 @@ namespace EECS_645_Project
         {
             //if (HasTag(tag, offset))
             //{
-                return ways[GetWayNumber(tag, offset)].ShouldSendSignal(write, offset);
+                return ways[GetWayNumber(tag, offset)].ShouldSendSignal(write);
             //}
             ///return false;
         }
@@ -56,7 +56,7 @@ namespace EECS_645_Project
         {
             for (int i = 0; i < ways.Length; i++)
             {
-                if (ways[i].GetTag(offset) == tag)
+                if (ways[i].GetTag() == tag)
                 {
                     return i;
                 }
@@ -79,7 +79,7 @@ namespace EECS_645_Project
 
         public void ChangeState(string tag, string offset, bool DataTransactionIsInitiatedByCurrentProcessor, bool ProcessorRead = false, bool DataSharedByOtherProcessors = false, BusTransactions transaction = BusTransactions.ExclusiveRead)
         {
-            ways[GetWayNumber(tag, offset)].ChangeState(offset, DataTransactionIsInitiatedByCurrentProcessor, ProcessorRead, DataSharedByOtherProcessors, transaction);
+            ways[GetWayNumber(tag, offset)].ChangeState(DataTransactionIsInitiatedByCurrentProcessor, ProcessorRead, DataSharedByOtherProcessors, transaction);
         }
 
         public bool IsFlushNeeded(BusSignal signal)

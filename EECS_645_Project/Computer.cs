@@ -40,30 +40,28 @@ namespace EECS_645_Project
                 {
                     for (int k = 0; k < processors[i].cache.cacheLines[j].ways.Length; k++)
                     {
-                        for (int l = 0; l < processors[i].cache.cacheLines[j].ways[k].cacheData.Length; l++)
-                        {
-                            if ((processors[i].cache.cacheLines[j].ways[k].cacheData[l].tag != null) || (processors[i].cache.cacheLines[j].ways[k].cacheData[l].tag == "1"))
+                            if ((processors[i].cache.cacheLines[j].ways[k].tag != null) || (processors[i].cache.cacheLines[j].ways[k].tag == "1"))
                             {
-                                switch (processors[i].cache.cacheLines[j].ways[k].cacheData[l].processorState)
-                                {
-                                    case ProcessorStates.Invalid:
-                                        processors[i].numberInStateI++;
-                                        break;
-                                    case ProcessorStates.Exclusive:
-                                        processors[i].numberInStateE++;
-                                        break;
-                                    case ProcessorStates.Modified:
-                                        processors[i].numberInStateM++;
-                                        break;
-                                    case ProcessorStates.Owner:
-                                        processors[i].numberInStateO++;
-                                        break;
-                                    case ProcessorStates.Shared:
-                                        processors[i].numberInStateS++;
-                                        break;
-                                    default:
-                                        break;
-                                }
+                            switch (processors[i].cache.cacheLines[j].ways[k].processorState)
+                            {
+                                case ProcessorStates.Invalid:
+                                    processors[i].numberInStateI++;
+                                    break;
+                                case ProcessorStates.Exclusive:
+                                    processors[i].numberInStateE++;
+                                    break;
+                                case ProcessorStates.Modified:
+                                    processors[i].numberInStateM++;
+                                    break;
+                                case ProcessorStates.Owner:
+                                    processors[i].numberInStateO++;
+                                    break;
+                                case ProcessorStates.Shared:
+                                    processors[i].numberInStateS++;
+                                    break;
+                                default:
+                                    break;
+
                             }
                         }
                     }
