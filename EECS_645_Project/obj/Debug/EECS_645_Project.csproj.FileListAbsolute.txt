@@ -1,0 +1,7 @@
+C:\Users\Brandon\source\repos\EECS_645_Project\EECS_645_Project\bin\Debug\EECS_645_Project.exe.config
+C:\Users\Brandon\source\repos\EECS_645_Project\EECS_645_Project\bin\Debug\EECS_645_Project.exe
+C:\Users\Brandon\source\repos\EECS_645_Project\EECS_645_Project\bin\Debug\EECS_645_Project.pdb
+C:\Users\Brandon\source\repos\EECS_645_Project\EECS_645_Project\obj\Debug\EECS_645_Project.csproj.CoreCompileInputs.cache
+C:\Users\Brandon\source\repos\EECS_645_Project\EECS_645_Project\obj\Debug\EECS_645_Project.exe
+C:\Users\Brandon\source\repos\EECS_645_Project\EECS_645_Project\obj\Debug\EECS_645_Project.pdb
+C:\Users\Brandon\source\repos\EECS_645_Project\EECS_645_Project\obj\Debug\EECS_645_Project.csprojAssemblyReference.cache
