@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace EECS_645_Project
 {
+    /* The conversion class is used to change the base representation
+     * of a number */
+
     public static class Conversions
     {
+	/* HexToBinary is a map from hexadecimal characters to their
+	 * binary representation */
         public static string HexToBinary(char HexCharacter)
         {
             switch (HexCharacter)
@@ -49,6 +54,8 @@ namespace EECS_645_Project
             }
         }
 
+	/* BinaryToDecimal builds and returns an integer from a string
+	 * representing a binary number */
         public static int BinaryToDecimal(string BinaryString)
         {
             int decimalValue = 0;
