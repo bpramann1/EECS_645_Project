@@ -53,64 +53,50 @@ namespace EECS_645_Project
         void Read()
         {
             bool shared = computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]);//Check to see if another processors cache has the data that is about to be read by the processor and store the value in a boolean variable
-            if (!HasData(traceData.tag[0], traceData.index[0], traceData.offset[0]))
+            if (!HasData(traceData.tag[0], traceData.index[0], traceData.offset[0]))//Check to see if the current processor has the data
             {
-                if (shared)
+                if (shared)//if other processors have the data
                 {
-                    cache.WriteData(computer.bus.GetData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]), traceData.tag[0], traceData.index[0], traceData.offset[0]);
+                    cache.WriteData(computer.bus.GetData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]), traceData.tag[0], traceData.index[0], traceData.offset[0]);//Get that data from other processors and write it
                 }
                 else
                 {
-                    cache.WriteData(traceData.timeStamp[0].ToString(), traceData.tag[0], traceData.index[0], traceData.offset[0]);
+                    cache.WriteData(traceData.timeStamp[0].ToString(), traceData.tag[0], traceData.index[0], traceData.offset[0]);//Write the time stamp as the data
                 }
             }
-            if (cache.ShouldSendSignal(false, traceData.tag[0], traceData.index[0], traceData.offset[0]))
+            if (cache.ShouldSendSignal(false, traceData.tag[0], traceData.index[0], traceData.offset[0]))//If this processor should send a signal to other caches
             {
-                computer.bus.SendSignal(cache.GetSignalToBeSent(false, traceData.tag[0], traceData.index[0], traceData.offset[0]), this);
+                computer.bus.SendSignal(cache.GetSignalToBeSent(false, traceData.tag[0], traceData.index[0], traceData.offset[0]), this);// Get the signal to be sent and send it on the bus
             }
-            cache.ChangeState(true, false, shared, traceData.tag[0], traceData.index[0], traceData.offset[0]);
-            //if(!successful){try to read from others catch
-            //if(!successful){read from memory}}
-            //if(we grabed the data from someone else){write to our own processor)
+            cache.ChangeState(true, false, shared, traceData.tag[0], traceData.index[0], traceData.offset[0]);//Change the state of the cache line on the current processor
         }
 
         void SendSignal(BusSignal outputSignal)
         {
-            computer.bus.SendSignal(outputSignal, this);
+            computer.bus.SendSignal(outputSignal, this);//Send a signal by first sending to the bus
         }
 
         public void RecieveSignal(BusSignal signal)
         {
-            ProcessSignal(signal);
+            ProcessSignal(signal);//Once the signal has been recieved call the processSignal on that signal
         }
 
         void ProcessSignal(BusSignal signal)
         {
-            ProcessorStates beforeChangeStateProcessorState = cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].GetState();
-            cache.ChangeState(false, false, false, signal.tag, signal.index, signal.offset, transaction: signal.transaction);
-            ProcessorStates afterChangeStateProcessorState = cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].GetState();
-            if ((beforeChangeStateProcessorState != ProcessorStates.Invalid) && (afterChangeStateProcessorState == ProcessorStates.Invalid))
-            {
-                cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].SetTag(null);
-            }
-            if ((signal.tag == "") || (signal.offset == "") || (signal.index == ""))
-            {
-                Console.Write("kl");
-            }
-
+            cache.ChangeState(false, false, false, signal.tag, signal.index, signal.offset, transaction: signal.transaction);//Change the state of the current processor based off the input signal
         }
 
 
 
         public bool HasData(string tag, string index, string offset)
         {
-            return cache.HasData(tag, index, offset);
+            return cache.HasData(tag, index, offset);//Check to see if the cache has the data based on the index and tag and return the value as a boolean
         }
 
 
         public string GetData(string tag, string index, string offset)
         {
-            return cache.GetData(tag, index, offset);
+            return cache.GetData(tag, index, offset); //Get the data from the cache and return it as a string.
         }
 
 
