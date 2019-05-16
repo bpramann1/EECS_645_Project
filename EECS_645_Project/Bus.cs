@@ -6,20 +6,25 @@ using System.Threading.Tasks;
 
 namespace EECS_645_Project
 {
+    /* Bus models a memory bus */
     public class Bus
     {
         Computer computer;  //This is the computer the owns the bus
         
 
-        public Bus(Computer Computer)   //Constructor for the bus
+        /* Default Bus Constructor */
+        public Bus(Computer Computer)
         {
-            computer = Computer;    //Set the computer to the one that created the bus
+            computer = Computer;
         }
 
-        public void SendSignal(BusSignal signal, Processor sendingProcessor) //Function to send a signal to all the processors but the sending processor
+        /* SendSignal broadcasts a signal from one processor to all others */
+        public void SendSignal(BusSignal signal, Processor sendingProcessor)
         {
             foreach (Processor processor in computer.processors)
             {
+                
+                Console.Write(sendingProcessor.cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[sendingProcessor.cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].GetState().ToString());
                 if ((processor != sendingProcessor) && (processor.HasData(signal.tag, signal.index, signal.offset)))
                 {
                     processor.RecieveSignal(signal);
@@ -27,6 +32,10 @@ namespace EECS_645_Project
             }
         }
 
+
+
+	/* GetData iterates through an array of processors stored in a computer and increases 
+	 * the number of Cache to Cache transfers based on the MOESI protocol */
         public string GetData(Processor askingProcessor, string tag, string index, string offset)
         {
             string data = "";
@@ -53,6 +62,9 @@ namespace EECS_645_Project
             return data;
         }
 
+	/* HasData iterates through the processors owned by this computer and returns a bool
+	 * value representing whether there is data stored in any processor other than
+	 * the askingProcessor */
         public bool HasData(Processor askingProcessor, string tag, string index, string offset)
         {
             bool hasData = false;
