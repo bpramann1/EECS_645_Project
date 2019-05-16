@@ -10,8 +10,8 @@ namespace EECS_645_Project
     {
         static void Main(string[] args)
         {
-            Computer computer = new Computer();
-            computer.RunSimulation();
+            Computer computer = new Computer(); //Create a new Computer
+            computer.RunSimulation(); //Run the Simulation      -Hint Visual Studio allows you to press F12 to go to function definition
         }
     }
 }

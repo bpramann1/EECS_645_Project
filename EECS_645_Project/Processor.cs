@@ -12,7 +12,7 @@ namespace EECS_645_Project
 
         public Cache cache;
         public TraceData traceData;
-        int processorId;
+        public int processorId;
         int missNumber;
         public int[] invalidationNumber = new int[4];
         //List<string> tags;

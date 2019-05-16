@@ -13,97 +13,79 @@ namespace EECS_645_Project
         public int[,] numberOfCacheToCacheTransfers;
         public Bus bus;
         public Memory memory;
-        public Computer()
+        public Computer()       //This is the constructor for the computer object
         {
-            memory = new Memory(this);
-            processors = new Processor[4] { new Processor(this, 0, ProcessorStates.Invalid), new Processor(this, 1, ProcessorStates.Invalid), new Processor(this, 2, ProcessorStates.Invalid), new Processor(this,  3, ProcessorStates.Invalid) };//Index will represent processor id
-            numberOfCacheToCacheTransfers = new int[processors.Length,processors.Length];
-            bus = new Bus(this);
+            memory = new Memory(this);      //Create a new memory for storing data
+            processors = new Processor[4] { new Processor(this, 0, ProcessorStates.Invalid), new Processor(this, 1, ProcessorStates.Invalid), new Processor(this, 2, ProcessorStates.Invalid), new Processor(this,  3, ProcessorStates.Invalid) };              //Create an array of four processors
+            numberOfCacheToCacheTransfers = new int[processors.Length,processors.Length];//Create a two dimensional array to hold the number of cache to cache transfers
+            bus = new Bus(this);        //Create a new bus for sending signals accross
 
         }
 
         public void RunSimulation()
         {
-            Console.Write("\nSimulation is started...");
-            int cycleNumber = 0;
-            int processorIdWithNextInstruction = CalculateProcessorIdWithNextInstruction();
-            while (processorIdWithNextInstruction != -1)
+            Console.Write("\nSimulation is started..."); //Write to the console that the simulation has started
+            int processorIdWithNextInstruction = CalculateProcessorIdWithNextInstruction(); //Calculate the processor id of the processor that has the instruction with the lowest clock cycle
+            while (processorIdWithNextInstruction != -1) //While we found a valid processor id
             {
-                if ((processors[processorIdWithNextInstruction].traceData.index.Count == 742) && (processorIdWithNextInstruction == 0)) //
-                {
-                    int hey = 9;
-                }
-                RunNextInstruction(processorIdWithNextInstruction);
-                cycleNumber++;
-                processorIdWithNextInstruction = CalculateProcessorIdWithNextInstruction();
+                RunNextInstruction(processorIdWithNextInstruction); //Run the next instruction
+                processorIdWithNextInstruction = CalculateProcessorIdWithNextInstruction(); //Calculate the processor id of the processor that has the instruction with the lowest clock cycle
             }
 
-            for (int i = 0; i < processors.Length; i++)
+            foreach(Processor processor in processors)//iterate through every processor
             {
-                for (int j = 0; j < processors[i].cache.cacheLines.Length; j++)
+                foreach (CacheLine cacheLine in processor.cache.cacheLines)//iterate through every cache line
                 {
-                    for (int k = 0; k < processors[i].cache.cacheLines[j].ways.Length; k++)
+                    foreach (CacheWay way in cacheLine.ways)// iterate through every way
                     {
-                            //if ((processors[i].cache.cacheLines[j].ways[k].tag != null) || (processors[i].cache.cacheLines[j].ways[k].tag == "1"))
-                            //{
-                            switch (processors[i].cache.cacheLines[j].ways[k].processorState)
-                            {
-                                case ProcessorStates.Invalid:
-                                    processors[i].numberInStateI++;
-                                    break;
-                                case ProcessorStates.Exclusive:
-                                    processors[i].numberInStateE++;
-                                    break;
-                                case ProcessorStates.Modified:
-                                    processors[i].numberInStateM++;
-                                    break;
-                                case ProcessorStates.Owner:
-                                    processors[i].numberInStateO++;
-                                    break;
-                                case ProcessorStates.Shared:
-                                    processors[i].numberInStateS++;
-                                    break;
-                                default:
-                                    break;
-
-                            //}
+                        switch (way.GetState())//branch to the state that matches the current way state
+                        {
+                            case ProcessorStates.Invalid: //if the state of way is invalid
+                                processor.numberInStateI++; //increment the number in the state invalid for the current processor
+                                break;
+                            case ProcessorStates.Exclusive: //if the state of way is exclusive
+                                processor.numberInStateE++; //increment the number in the state exclusive for the current processor
+                                break;
+                            case ProcessorStates.Modified: //if the state of way is modified
+                                processor.numberInStateM++; //increment the number in the state modified for the current processor
+                                break;
+                            case ProcessorStates.Owner: //if the state of way is owner
+                                processor.numberInStateO++; //increment the number in the state owner for the current processor
+                                break;
+                            case ProcessorStates.Shared: //if the state of way is shared
+                                processor.numberInStateS++; //increment the number in the state shared for the current processor
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
-                Console.Write("\nNumber of unique instructions:" + processors[i].numberOfUniqueInstructions + "\nNumber of index:" + processors[i].indexs.Count + "\nNumber of offsets:" + processors[i].offsets.Count);
-                Console.Write("\n\nNumber Of Cache To Cache Transfers:");
-                for (int j = 0; j < processors.Length; j++)
+                Console.Write("\n\nNumber Of Cache To Cache Transfers:"); //Write to the console two new lines followed by "Number Of Cache To Cache Transfers:"
+                foreach(Processor processor2 in processors)//iterate through all the processors
                 {
-                    if (i != j)
+                    if (processor.processorId != processor2.processorId)//if the first processor is not the second processor
                     {
-                        Console.Write("\nNumber of P" + i + "-P" + j + " transfers: " + numberOfCacheToCacheTransfers[i, j]);
+                        Console.Write("\nNumber of P" + processor.processorId + "-P" + processor2.processorId + " transfers: " + numberOfCacheToCacheTransfers[processor.processorId, processor2.processorId]);//Write to the console the number of cache to cache transfers
                     }
                 }
-
-
-
-
-
-
-
             }
 
             Console.Write("\n\nNumber Of Invalidations For Each Processor:");
-            for (int i = 0; i < processors.Length; i++)
+            for (int i = 0; i < processors.Length; i++)//iterate through all the processors
             {
-                Console.Write("\nP" + i + " Invalidation from:   m=" + processors[i].invalidationNumber[0] + " o=" + processors[i].invalidationNumber[1] + " e=" + processors[i].invalidationNumber[2] + " s=" + processors[i].invalidationNumber[3]);
+                Console.Write("\nP" + i + " Invalidation from:   m=" + processors[i].invalidationNumber[0] + " o=" + processors[i].invalidationNumber[1] + " e=" + processors[i].invalidationNumber[2] + " s=" + processors[i].invalidationNumber[3]);// Write the invalidation number from each state
             }
 
             Console.Write("\n\nNumber Of Dirty Write Backs For Each Processor:");
             for (int i = 0; i < processors.Length; i++)
             {
-                Console.Write("\nP" + i + "=" + (processors[i].invalidationNumber[0] + processors[i].invalidationNumber[1]));
+                Console.Write("\nP" + i + "=" + (processors[i].invalidationNumber[0] + processors[i].invalidationNumber[1]));//write the dirty writebacks of each state
             }
 
             Console.Write("\n\nNumber Of Cache State Machines In Each State:");
             for (int i = 0; i < processors.Length; i++)
             {
-                Console.Write("\nP" + i + " number in state:   m=" + processors[i].numberInStateM + " o=" + processors[i].numberInStateO + " e=" + processors[i].numberInStateE + " s=" + processors[i].numberInStateS + " i=" + processors[i].numberInStateI);
+                Console.Write("\nP" + i + " number in state:   m=" + processors[i].numberInStateM + " o=" + processors[i].numberInStateO + " e=" + processors[i].numberInStateE + " s=" + processors[i].numberInStateS + " i=" + processors[i].numberInStateI);//Write the ending number of processors in each state.
             }
 
             Console.Write("\nThe simulation has finished all the instructions.");
@@ -114,25 +96,25 @@ namespace EECS_645_Project
 
         void RunNextInstruction(int processorIdWithNextInstruction)
         {
-                processors[processorIdWithNextInstruction].RunInstruction();
+                processors[processorIdWithNextInstruction].RunInstruction();//Tell the processor with the correct id to run its front instruction
         }
 
         int CalculateProcessorIdWithNextInstruction()
         {
-            int processorIdWithNextInstruction = -1;
-            int smallestTimeStamp = -1;
-            for (int i = 0; i < processors.Length; i++)
+            int processorIdWithNextInstruction = -1; //Initial a variable holding the value of the processor id to -1 so that we will know that if the value ends negative one, we did not find a processor with a usable instruction
+            int smallestTimeStamp = -1; //Initialize a variable holding the value of the smallest time stamp to -1 so that we will know that if the value is still -1, we have not yet found a processor with a usable instruction
+            for (int i = 0; i < processors.Length; i++) //iterate through all the processors
             {
-                if (processors[i].traceData.timeStamp.Count != 0)
+                if (processors[i].traceData.timeStamp.Count != 0) //if there are still some instructions left over
                 {
-                    if ((smallestTimeStamp == -1) || (processors[i].traceData.timeStamp[0]<smallestTimeStamp))
+                    if ((smallestTimeStamp == -1) || (processors[i].traceData.timeStamp[0]<smallestTimeStamp)) //if we have found no instructions yet or the time stamp for the instruction we are looking at is less than the one we think is the least
                     {
-                        processorIdWithNextInstruction = i;
-                        smallestTimeStamp = processors[i].traceData.timeStamp[0];
+                        processorIdWithNextInstruction = i; //Set the processor id with next instruction equal to the current processor id
+                        smallestTimeStamp = processors[i].traceData.timeStamp[0]; //Set the current least time stamp to the time stamp of the urrent instruction.
                     }
                 }
             }
-            return processorIdWithNextInstruction;
+            return processorIdWithNextInstruction; //return the current processor id.
         }
     }
 }
