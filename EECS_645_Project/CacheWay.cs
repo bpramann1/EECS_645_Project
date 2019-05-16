@@ -232,7 +232,7 @@ namespace EECS_645_Project
         public void WriteData(string inputData, string inputTag, string offset)
         {
             tag = inputTag;
-            cacheData[Conversions.BinaryToDecimal(offset)].WriteData(inputData, inputTag);
+            cacheData[Conversions.BinaryToDecimal(offset)].WriteData(inputData);
         }
 
         public string GetData(string offset)
