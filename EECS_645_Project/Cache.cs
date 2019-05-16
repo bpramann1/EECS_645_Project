@@ -34,18 +34,6 @@ namespace EECS_645_Project
             cacheLines[Conversions.BinaryToDecimal(index)].WriteData(inputData, tag, offset);
         }
 
-        //public void Flush(string tag, string index, string offset)
-        //{
-        //    cacheLines[Conversions.BinaryToDecimal(index)].Flush(tag, offset);
-        //}
-
-	/* IsFlushNeeded returns a True / False value based on the MOESI protocol and
-	 * an input bus signal */
-        public bool IsFlushNeeded(BusSignal signal)
-        {
-            return cacheLines[Conversions.BinaryToDecimal(signal.index)].IsFlushNeeded(signal);
-        }
-
 	/* ChangeState updates a cacheLine based on the MOESI protocol */
         public void ChangeState(bool DataTransactionIsInitiatedByCurrentProcessor, bool write, bool shared, string tag, string index, string offset, BusTransactions transaction = BusTransactions.ExclusiveRead)
         {
@@ -64,14 +52,6 @@ namespace EECS_645_Project
         {
             return cacheLines[Conversions.BinaryToDecimal(index)].HasTag(tag, offset);
         }
-
-	/* SharedData returns a bool value representing if the data in a cache line
-	 * is in the MOESI 'Shared' state */
-        public bool SharedData(string tag, string index, string offset)
-        {          
-            return cacheLines[Conversions.BinaryToDecimal(index)].SharedData(tag, offset);
-        }
-
 
 	/* ShouldSendSignal returns a bool value representing whether the MOESI protocol
 	 * requires a signal be sent */

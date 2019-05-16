@@ -32,11 +32,6 @@ namespace EECS_645_Project
 
         public ProcessorStates GetState()
         {
-            if(processorState == ProcessorStates.Modified)
-            {
-                int a = 0;
-            }
-
             return processorState;
         }
 
@@ -67,26 +62,6 @@ namespace EECS_645_Project
                 }
             }
             return shouldSendSignal;
-        }
-
-        public bool IsFlushNeeded(BusSignal signal)
-        {
-            bool isFlushNeeded = false;
-            switch (processorState)
-            {
-                case ProcessorStates.Exclusive:
-                    isFlushNeeded = isFlushNeeded || (signal.transaction == BusTransactions.ExclusiveRead) || (signal.transaction == BusTransactions.Read);
-                    break;
-                case ProcessorStates.Modified:
-                    isFlushNeeded = isFlushNeeded || (signal.transaction == BusTransactions.ExclusiveRead) || (signal.transaction == BusTransactions.Read);
-                    break;
-                case ProcessorStates.Owner:
-                    isFlushNeeded = isFlushNeeded || (signal.transaction == BusTransactions.ExclusiveRead) || (signal.transaction == BusTransactions.Read);
-                    break;
-                default:
-                    break;
-            }
-            return isFlushNeeded;
         }
 
         public BusSignal GetSignalToBeSent(bool write, string tag, string index, string offset)

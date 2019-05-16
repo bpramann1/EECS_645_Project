@@ -31,23 +31,9 @@ namespace EECS_645_Project
             return hasTag;
         }
 
-        public bool SharedData(string tag, string offset)
-        {
-            bool sharedData = false;
-            foreach (CacheWay way in ways)
-            {
-                sharedData = sharedData || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Shared);// || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Exclusive);
-            }
-            return sharedData;
-        }
-
         public bool ShouldSendSignal(bool write, string tag, string offset)
         {
-            //if (HasTag(tag, offset))
-            //{
                 return ways[GetWayNumber(tag, offset)].ShouldSendSignal(write);
-            //}
-            ///return false;
         }
 
         public BusSignal GetSignalToBeSent(bool write, string tag, string index, string offset)
@@ -84,21 +70,6 @@ namespace EECS_645_Project
         {
             ways[GetWayNumber(tag, offset)].ChangeState(DataTransactionIsInitiatedByCurrentProcessor, ProcessorRead, DataSharedByOtherProcessors, transaction);
         }
-
-        public bool IsFlushNeeded(BusSignal signal)
-        {
-            bool isFlushNeeded = false;
-            if (HasTag(signal.tag, signal.offset))
-            {
-                isFlushNeeded = ways[GetWayNumber(signal.tag, signal.offset)].IsFlushNeeded(signal);
-            }
-            return isFlushNeeded;
-        }
-
-        //public void Flush(string tag, string offset)
-        //{
-        //    ways[GetWayNumber(tag, offset)].Flush(offset);
-        //}
 
         public string GetData(string tag, string offset)
         {

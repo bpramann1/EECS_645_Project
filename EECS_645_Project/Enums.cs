@@ -6,15 +6,6 @@
     Flush
 }
 
-public enum CacheIndexStates
-{
-    Invalid,
-    Exclusive,
-    Modified,
-    Owner,
-    Shared
-}
-
 public enum ProcessorStates
 {
     Invalid,
