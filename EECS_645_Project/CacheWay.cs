@@ -24,17 +24,25 @@ namespace EECS_645_Project
             }
         }
 
-
+	/* GetTag returns a line tag */
         public string GetTag()
         {
             return tag;
         }
 
+	/* GetState returns a MOESI state */
         public ProcessorStates GetState()
         {
+            if(processorState == ProcessorStates.Modified)
+            {
+                int a = 0;
+            }
+
             return processorState;
         }
 
+	/* ShouldSendSignal returns a bool value representing whether
+	 * a signal should be sent or not based on the MOESI protocol */
         public bool ShouldSendSignal(bool write)
         {
             bool shouldSendSignal = false;
@@ -64,6 +72,29 @@ namespace EECS_645_Project
             return shouldSendSignal;
         }
 
+	/* IsFlushNeeded returns a bool value representing whether
+	 * a flush is necessary or not based on the MOESI protocol */
+        public bool IsFlushNeeded(BusSignal signal)
+        {
+            bool isFlushNeeded = false;
+            switch (processorState)
+            {
+                case ProcessorStates.Exclusive:
+                    isFlushNeeded = isFlushNeeded || (signal.transaction == BusTransactions.ExclusiveRead) || (signal.transaction == BusTransactions.Read);
+                    break;
+                case ProcessorStates.Modified:
+                    isFlushNeeded = isFlushNeeded || (signal.transaction == BusTransactions.ExclusiveRead) || (signal.transaction == BusTransactions.Read);
+                    break;
+                case ProcessorStates.Owner:
+                    isFlushNeeded = isFlushNeeded || (signal.transaction == BusTransactions.ExclusiveRead) || (signal.transaction == BusTransactions.Read);
+                    break;
+                default:
+                    break;
+            }
+            return isFlushNeeded;
+        }
+
+	/* GetSignalToBeSent returns a signal to be broadcast based on the MOESI protocol */
         public BusSignal GetSignalToBeSent(bool write, string tag, string index, string offset)
         {
             BusTransactions transaction = BusTransactions.Flush;
@@ -99,6 +130,7 @@ namespace EECS_645_Project
         }
 
 
+	/* SetTag updates a cache line tag */
         public void SetTag(string inputTag)
         {
             tag = inputTag;
@@ -229,12 +261,14 @@ namespace EECS_645_Project
             }
         }
 
+	/* WriteData updates the data in a cell given by the parameter offset */
         public void WriteData(string inputData, string inputTag, string offset)
         {
             tag = inputTag;
-            cacheData[Conversions.BinaryToDecimal(offset)].WriteData(inputData);
+            cacheData[Conversions.BinaryToDecimal(offset)].WriteData(inputData, inputTag);
         }
 
+	/* GetData returns the data in a cell given by the parameter offset */
         public string GetData(string offset)
         {
             return cacheData[Conversions.BinaryToDecimal(offset)].GetData();
