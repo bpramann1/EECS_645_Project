@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace EECS_645_Project
 {
-    public class Memory//Empty class as we did not need to implement anything
+    /* Memory is an object representing cache memory */
+    public class Memory
     {
+	/* Create a computer and associate it with
+	 * a memory object */
         Computer computer;
+
+	/* Default Memory constructor */
         public Memory(Computer Computer)
         {
             computer = Computer;
