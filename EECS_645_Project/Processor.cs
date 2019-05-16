@@ -8,78 +8,51 @@ namespace EECS_645_Project
 {
     public class Processor
     {
-        public Computer computer;
-
-        public Cache cache;
-        public TraceData traceData;
-        public int processorId;
-        int missNumber;
-        public int[] invalidationNumber = new int[4];
-        //List<string> tags;
-        public List<string> indexs;
-        public List<string> offsets;
-        public int numberOfUniqueInstructions;
-        public int numberInStateM = 0;
-        public int numberInStateO = 0;
-        public int numberInStateE = 0;
-        public int numberInStateS = 0;
-        public int numberInStateI = 0;
-        public Processor(Computer Computer, int ProcessorId, ProcessorStates ProcessorState)
+        public Computer computer; //This is needed to be a reference to the computer that owns the processor
+        public Cache cache; //This will be the cache associated with this processor
+        public TraceData traceData; //This will be the data for the trace associated with this processor
+        public int processorId; //This will be the processor id
+        public int[] invalidationNumber = new int[4]; //This is an array for keeping track how many times each state has be invalidated
+        public int numberInStateM = 0; //This is for keeping track how many cache lines are in state M
+        public int numberInStateO = 0; //This is for keeping track how many cache lines are in state O
+        public int numberInStateE = 0; //This is for keeping track how many cache lines are in state E
+        public int numberInStateS = 0; //This is for keeping track how many cache lines are in state S
+        public int numberInStateI = 0; //This is for keeping track how many cache lines are in state I
+        public Processor(Computer Computer, int ProcessorId, ProcessorStates ProcessorState) //This is the constructor to create a processor
         {
-            computer = Computer;
-            missNumber = 0;
-            cache = new Cache(this);
-            processorId = ProcessorId;
-            traceData = new TraceData("p" + processorId + ".tr");
-            //tags = new List<string>();
-            indexs = new List<string>();
-            offsets = new List<string>();
+            computer = Computer; //Set the computer to the one that created the processor
+            cache = new Cache(this);  //Create the cache for this processor
+            processorId = ProcessorId; //Set the processor id to the one that the controlling computer wants it to be
+            traceData = new TraceData("p" + processorId + ".tr"); //Create the trace data for this processor
         }
 
         public void RunInstruction()
-        {
-            if (!((indexs.Contains(traceData.index[0]))&&(offsets.Contains(traceData.offset[0]))))
+        { 
+            if (traceData.shouldWrite[0]) //Check the trace data to see if the instruction is a processor write
             {
-                numberOfUniqueInstructions++;
-                if (!indexs.Contains(traceData.index[0]))
-                {
-                    indexs.Add(traceData.index[0]);
-                }
-                if (!offsets.Contains(traceData.offset[0]))
-                {
-                    offsets.Add(traceData.offset[0]);
-                }
-            }
-
-            if (traceData.shouldWrite[0])
-            {
-                Write();
+                Write();//Run the function for a processor write
             }
             else
             {
-                Read();
+                Read();//Run the function for a processor read
             }
-            traceData.PopQueue();
+            traceData.PopQueue();//Pop the current instruction of the queue of instructions
         }
         
         void Write()
         {
-            bool shared = computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]);
-            cache.WriteData(traceData.timeStamp[0].ToString(), traceData.tag[0], traceData.index[0], traceData.offset[0]);
-            //write data to our cache
-            if (cache.ShouldSendSignal(true, traceData.tag[0], traceData.index[0], traceData.offset[0]))
+            bool shared = computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]); //Check to see if another processors cache has the data that is about to be written by the processor and store the value in a boolean variable
+            cache.WriteData(traceData.timeStamp[0].ToString(), traceData.tag[0], traceData.index[0], traceData.offset[0]);//Write the data
+            if (cache.ShouldSendSignal(true, traceData.tag[0], traceData.index[0], traceData.offset[0]))//if you should send a signal on the bus
             {
-                computer.bus.SendSignal(cache.GetSignalToBeSent(true, traceData.tag[0], traceData.index[0], traceData.offset[0]), this);
+                computer.bus.SendSignal(cache.GetSignalToBeSent(true, traceData.tag[0], traceData.index[0], traceData.offset[0]), this);//Figure out what signal needs to be sent and send it on the bus
             }
-            cache.ChangeState(true, true, shared, traceData.tag[0], traceData.index[0], traceData.offset[0]);
-            //cache.ChangeState(true, true, computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]), traceData.tag[0], traceData.index[0], traceData.offset[0]);
-            //change state/ invalidate other caches
+            cache.ChangeState(true, true, shared, traceData.tag[0], traceData.index[0], traceData.offset[0]);//change the state of the cache line
         }
 
         void Read()
         {
-            //Try to read from this processors own catch
-            bool shared = computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]);
+            bool shared = computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]);//Check to see if another processors cache has the data that is about to be read by the processor and store the value in a boolean variable
             if (!HasData(traceData.tag[0], traceData.index[0], traceData.offset[0]))
             {
                 if (shared)

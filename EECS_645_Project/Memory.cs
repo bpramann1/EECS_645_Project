@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EECS_645_Project
 {
-    public class Memory
+    public class Memory//Empty class as we did not need to implement anything
     {
         Computer computer;
         public Memory(Computer Computer)
