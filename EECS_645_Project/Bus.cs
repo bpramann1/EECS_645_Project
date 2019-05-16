@@ -20,8 +20,6 @@ namespace EECS_645_Project
         {
             foreach (Processor processor in computer.processors)
             {
-                
-                Console.Write(sendingProcessor.cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[sendingProcessor.cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].GetState().ToString());
                 if ((processor != sendingProcessor) && (processor.HasData(signal.tag, signal.index, signal.offset)))
                 {
                     processor.RecieveSignal(signal);
