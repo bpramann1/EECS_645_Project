@@ -9,6 +9,7 @@ namespace EECS_645_Project
     public class Bus
     {
         Computer computer;  //This is the computer the owns the bus
+        
 
         public Bus(Computer Computer)   //Constructor for the bus
         {
@@ -19,6 +20,8 @@ namespace EECS_645_Project
         {
             foreach (Processor processor in computer.processors)
             {
+                
+                Console.Write(sendingProcessor.cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[sendingProcessor.cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].GetState().ToString());
                 if ((processor != sendingProcessor) && (processor.HasData(signal.tag, signal.index, signal.offset)))
                 {
                     processor.RecieveSignal(signal);
@@ -63,17 +66,6 @@ namespace EECS_645_Project
                 }
             }
             return hasData;
-        }
-
-        public void SendData(int Data, Processor recievingProcessor)
-        {
-            foreach (Processor processor in computer.processors)
-            {
-                //if (processor != sendingProcessor)
-                //{
-                //    processor.RecieveSignal(new BusSignal(Transaction));
-                //}
-            }
         }
     }
 }

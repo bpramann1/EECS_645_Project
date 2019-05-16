@@ -64,25 +64,25 @@ namespace EECS_645_Project
         
         void Write()
         {
-            //bool shared = SharedData(traceData.tag[0], traceData.index[0], traceData.offset[0]);
+            bool shared = computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]);
             cache.WriteData(traceData.timeStamp[0].ToString(), traceData.tag[0], traceData.index[0], traceData.offset[0]);
             //write data to our cache
             if (cache.ShouldSendSignal(true, traceData.tag[0], traceData.index[0], traceData.offset[0]))
             {
                 computer.bus.SendSignal(cache.GetSignalToBeSent(true, traceData.tag[0], traceData.index[0], traceData.offset[0]), this);
             }
-            cache.ChangeState(true, true, HasData(traceData.tag[0], traceData.index[0], traceData.offset[0]), traceData.tag[0], traceData.index[0], traceData.offset[0]);
+            cache.ChangeState(true, true, shared, traceData.tag[0], traceData.index[0], traceData.offset[0]);
+            //cache.ChangeState(true, true, computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]), traceData.tag[0], traceData.index[0], traceData.offset[0]);
             //change state/ invalidate other caches
         }
 
         void Read()
         {
             //Try to read from this processors own catch
-            //bool shared = SharedData(traceData.tag[0], traceData.index[0], traceData.offset[0]);
-            //bool ShouldSend
+            bool shared = computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]);
             if (!HasData(traceData.tag[0], traceData.index[0], traceData.offset[0]))
             {
-                if (computer.bus.HasData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]))
+                if (shared)
                 {
                     cache.WriteData(computer.bus.GetData(this, traceData.tag[0], traceData.index[0], traceData.offset[0]), traceData.tag[0], traceData.index[0], traceData.offset[0]);
                 }
@@ -95,7 +95,7 @@ namespace EECS_645_Project
             {
                 computer.bus.SendSignal(cache.GetSignalToBeSent(false, traceData.tag[0], traceData.index[0], traceData.offset[0]), this);
             }
-            cache.ChangeState(true, false, HasData(traceData.tag[0], traceData.index[0], traceData.offset[0]), traceData.tag[0], traceData.index[0], traceData.offset[0]);
+            cache.ChangeState(true, false, shared, traceData.tag[0], traceData.index[0], traceData.offset[0]);
             //if(!successful){try to read from others catch
             //if(!successful){read from memory}}
             //if(we grabed the data from someone else){write to our own processor)
@@ -113,33 +113,18 @@ namespace EECS_645_Project
 
         void ProcessSignal(BusSignal signal)
         {
-            //if (signal.transaction != BusTransactions.Flush)
-            //{
-            //    if (IsFlushNeeded(signal))
-            //    {
-                    cache.ChangeState(false, false, false, signal.tag, signal.index, signal.offset, transaction: signal.transaction);
-                    if((signal.tag == "") || (signal.offset == "") || (signal.index == ""))
-                    {
-                        Console.Write("kl");
-                    }
- //                   //ProcessSignal(new BusSignal(BusTransactions.Flush, signal.tag, signal.index, signal.offset));
- //               }
- //               else
- //               {
- //                   cache.ChangeState(false, false, false, signal.tag, signal.index, signal.offset, signal.transaction);
- //               }
+            ProcessorStates beforeChangeStateProcessorState = cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].GetState();
+            cache.ChangeState(false, false, false, signal.tag, signal.index, signal.offset, transaction: signal.transaction);
+            ProcessorStates afterChangeStateProcessorState = cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].GetState();
+            if ((beforeChangeStateProcessorState != ProcessorStates.Invalid) && (afterChangeStateProcessorState == ProcessorStates.Invalid))
+            {
+                cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].ways[cache.cacheLines[Conversions.BinaryToDecimal(signal.index)].GetWayNumber(signal.tag, signal.offset)].SetTag(null);
+            }
+            if ((signal.tag == "") || (signal.offset == "") || (signal.index == ""))
+            {
+                Console.Write("kl");
+            }
 
- //           }
- //           else
- //           {
- ////               cache.Flush(signal.tag, signal.index, signal.offset);
- //           }
-
-        }
-
-        bool IsFlushNeeded(BusSignal signal)
-        {
-            return cache.IsFlushNeeded(signal);
         }
 
 
@@ -149,10 +134,6 @@ namespace EECS_645_Project
             return cache.HasData(tag, index, offset);
         }
 
-        //public bool SharedData(string tag, string index, string offset)
-        //{
-        //    return cache.SharedData(tag, index, offset);
-        //}
 
         public string GetData(string tag, string index, string offset)
         {

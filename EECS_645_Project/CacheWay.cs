@@ -32,6 +32,11 @@ namespace EECS_645_Project
 
         public ProcessorStates GetState()
         {
+            if(processorState == ProcessorStates.Modified)
+            {
+                int a = 0;
+            }
+
             return processorState;
         }
 
@@ -56,8 +61,7 @@ namespace EECS_645_Project
                 switch (processorState)
                 {
                     case ProcessorStates.Invalid:
-                        shouldSendSignal = true;
-                        break;
+                        return true;
                     default:
                         break;
                 }
@@ -125,14 +129,18 @@ namespace EECS_645_Project
             tag = inputTag;
         }
 
-        public void ChangeState(bool DataTransactionIsInitiatedByCurrentProcessor, bool ProcessorRead = false, bool DataSharedByOtherProcessors = false, BusTransactions transaction = BusTransactions.ExclusiveRead)
+        public void ChangeState(bool DataTransactionIsInitiatedByCurrentProcessor, bool ProcessorWrite = true, bool DataSharedByOtherProcessors = false, BusTransactions transaction = BusTransactions.ExclusiveRead)
         {
             switch (processorState)
             {
                 case ProcessorStates.Invalid:
                     if (DataTransactionIsInitiatedByCurrentProcessor)
                     {
-                        if (ProcessorRead)
+                        if (ProcessorWrite)
+                        {
+                            processorState = ProcessorStates.Modified;
+                        }
+                        else
                         {
                             if (DataSharedByOtherProcessors)
                             {
@@ -143,10 +151,6 @@ namespace EECS_645_Project
                                 processorState = ProcessorStates.Exclusive;
                             }
                         }
-                        else
-                        {
-                            processorState = ProcessorStates.Modified;
-                        }
                     }
                     else
                     {
@@ -156,11 +160,7 @@ namespace EECS_645_Project
                 case ProcessorStates.Exclusive:
                     if (DataTransactionIsInitiatedByCurrentProcessor)
                     {
-                        if (ProcessorRead)
-                        {
-                            //Leave the processor state the same
-                        }
-                        else
+                        if (ProcessorWrite)
                         {
                             processorState = ProcessorStates.Modified;
                         }
@@ -182,18 +182,7 @@ namespace EECS_645_Project
                     }
                     break;
                 case ProcessorStates.Modified:
-                    if (DataTransactionIsInitiatedByCurrentProcessor)
-                    {
-                        if (ProcessorRead)
-                        {
-                            //Leave the processor state the same
-                        }
-                        else
-                        {
-                            //Leave the processor state the same
-                        }
-                    }
-                    else
+                    if (!DataTransactionIsInitiatedByCurrentProcessor)
                     {
                         switch (transaction)
                         {
@@ -212,11 +201,7 @@ namespace EECS_645_Project
                 case ProcessorStates.Owner:
                     if (DataTransactionIsInitiatedByCurrentProcessor)
                     {
-                        if (ProcessorRead)
-                        {
-                            //Leave the processor state the same
-                        }
-                        else
+                        if (ProcessorWrite)
                         {
                             processorState = ProcessorStates.Modified;
                         }
@@ -241,11 +226,7 @@ namespace EECS_645_Project
                 case ProcessorStates.Shared:
                     if (DataTransactionIsInitiatedByCurrentProcessor)
                     {
-                        if (ProcessorRead)
-                        {
-                            //Leave the processor state the same
-                        }
-                        else
+                        if (ProcessorWrite)
                         {
                             processorState = ProcessorStates.Modified;
                         }

@@ -23,7 +23,10 @@ namespace EECS_645_Project
             bool hasTag = false;
             foreach (CacheWay way in ways)
             {
-                hasTag = hasTag || (way.GetTag() == tag) ;
+                if (way.GetState()!= ProcessorStates.Invalid)
+                {
+                    hasTag = hasTag || (way.GetTag() == tag);
+                }
             }
             return hasTag;
         }
@@ -33,7 +36,7 @@ namespace EECS_645_Project
             bool sharedData = false;
             foreach (CacheWay way in ways)
             {
-                sharedData = sharedData || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Shared) || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Exclusive);
+                sharedData = sharedData || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Shared);// || (way.GetTag() == tag) && (way.GetState() == ProcessorStates.Exclusive);
             }
             return sharedData;
         }

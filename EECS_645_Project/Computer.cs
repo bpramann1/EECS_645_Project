@@ -29,6 +29,10 @@ namespace EECS_645_Project
             int processorIdWithNextInstruction = CalculateProcessorIdWithNextInstruction();
             while (processorIdWithNextInstruction != -1)
             {
+                if ((processors[processorIdWithNextInstruction].traceData.index.Count == 742) && (processorIdWithNextInstruction == 0)) //
+                {
+                    int hey = 9;
+                }
                 RunNextInstruction(processorIdWithNextInstruction);
                 cycleNumber++;
                 processorIdWithNextInstruction = CalculateProcessorIdWithNextInstruction();
